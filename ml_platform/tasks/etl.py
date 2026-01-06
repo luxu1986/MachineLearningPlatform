@@ -49,11 +49,11 @@ class ETLTask(BaseTask):
 
         # Stage 1: Time bucketing
         if params.time_bucket:
-        df = self._add_time_bucket(df, params.time_column, params.time_bucket)
+            df = self._add_time_bucket(df, params.time_column, params.time_bucket)
 
         # Stage 2: Aggregation (optional - skip if no aggregations defined)
         if params.aggregations:
-        agg_df = self._aggregate(df, params.group_by, params.aggregations)
+            agg_df = self._aggregate(df, params.group_by, params.aggregations)
         else:
             agg_df = df
 
