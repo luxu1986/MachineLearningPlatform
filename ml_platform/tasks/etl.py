@@ -43,9 +43,12 @@ class ETLTask(BaseTask):
         params = self.task_config.get_etl_params()
 
         # Stage 0: Deduplication (if configured)
-        # Removes ALL rows where dedupe column has duplicates (both copies discarded)
-        if params.dedupe_by:
-            df = self._remove_duplicates(df, params.dedupe_by)
+        # Mode: "none" (skip), "keep_first" (default, fast), or "drop_all" (slow)
+        dedupe_mode = params.dedupe_mode or "keep_first"
+        if params.dedupe_by and dedupe_mode != "none":
+            df = self._remove_duplicates(df, params.dedupe_by, mode=dedupe_mode)
+        elif dedupe_mode == "none":
+            print("   Skipping deduplication (mode: none)")
 
         # Stage 1: Time bucketing
         if params.time_bucket:
@@ -69,30 +72,45 @@ class ETLTask(BaseTask):
 
         return agg_df
 
-    def _remove_duplicates(self, df: DataFrame, dedupe_col: str) -> DataFrame:
+    def _remove_duplicates(
+        self, 
+        df: DataFrame, 
+        dedupe_col: str, 
+        mode: str = "keep_first"
+    ) -> DataFrame:
         """
-        Remove ALL rows where the dedupe column has duplicate values.
-
-        This matches legacy behavior: if an event_id appears twice, BOTH rows
-        are discarded (not just one). Only truly unique rows are kept.
+        Remove duplicate rows based on a column.
 
         Args:
             df: Input DataFrame
             dedupe_col: Column name to check for duplicates
+            mode: Deduplication mode:
+                - "none": Skip deduplication entirely
+                - "keep_first": Keep one copy of each duplicate (fast, uses dropDuplicates)
+                - "drop_all": Remove ALL rows where duplicates exist (slow, uses groupBy + join)
 
         Returns:
-            DataFrame with only unique rows (duplicates fully removed)
+            DataFrame with duplicates handled according to mode
         """
-        print(f"   Removing duplicates by: {dedupe_col}")
+        print(f"   Removing duplicates by: {dedupe_col} (mode: {mode})")
 
-        # Count occurrences of each value
-        window = Window.partitionBy(dedupe_col)
-        df_with_count = df.withColumn("_dup_count", F.count(dedupe_col).over(window))
-
-        # Keep only rows where count == 1 (truly unique)
-        unique_df = df_with_count.filter(F.col("_dup_count") == 1).drop("_dup_count")
-
-        return unique_df
+        if mode == "keep_first":
+            # Fast path: keep one arbitrary row per dedupe_col value
+            return df.dropDuplicates([dedupe_col])
+        
+        elif mode == "drop_all":
+            # Slow path: remove ALL rows where dedupe_col has duplicates
+            # Uses groupBy + join instead of window functions for better scalability
+            unique_keys = (
+                df.groupBy(dedupe_col)
+                .count()
+                .filter("count = 1")
+                .select(dedupe_col)
+            )
+            return df.join(unique_keys, on=dedupe_col, how="inner")
+        
+        else:
+            raise ValueError(f"Unknown dedupe_mode: {mode}. Use 'none', 'keep_first', or 'drop_all'")
 
     def _add_time_bucket(
         self,

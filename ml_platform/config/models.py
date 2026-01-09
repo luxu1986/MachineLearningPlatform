@@ -41,7 +41,7 @@ class SourceConfig(BaseModel):
     Defines a physical data source (Hive table, S3 path, etc.)
     This is the "inventory" of available data.
     """
-    type: Literal["hive", "s3_parquet", "s3_csv", "delta"]
+    type: Literal["hive", "coba2", "s3_parquet", "s3_csv", "delta"]
     path: str
     columns: Dict[str, ColumnDefinition]
     description: Optional[str] = None
@@ -169,6 +169,7 @@ class ETLTaskParams(BaseModel):
     aggregations: Optional[List[AggregationColumn]] = None
     rolling_windows: Optional[List[RollingWindowSpec]] = None
     dedupe_by: Optional[str] = None
+    dedupe_mode: Optional[Literal["none", "keep_first", "drop_all"]] = "keep_first"
     output_groupings: Optional[List[OutputGrouping]] = None
 
     def get_lookback_seconds(self) -> int:

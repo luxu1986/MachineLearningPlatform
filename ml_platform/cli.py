@@ -204,7 +204,7 @@ def run_cli(args: CLIArgs) -> int:
     return 0
 
 
-def main(argv: Optional[list] = None, exit_on_complete: bool = True) -> int:
+def main(argv: Optional[list] = None, exit_on_complete: bool = False) -> int:
     """
     CLI entry point.
     

@@ -7,10 +7,9 @@
 
 downsampled_auction_logs:
   type: "hive"
-  path: "hive_prod.lena.auction_report_sample"
+  path: "hive_prod.lena.ex_exchange_auction_report_sample"
   description: "Main auction logs table containing request, bid, and win info"
   time_column: "auction_timestamp"
-  partition_cols: ["dt"]
   columns:
     event_id:
       dtype: "string"
@@ -85,10 +84,9 @@ downsampled_auction_logs:
 
 auction_logs:
   type: "coba2"
-  path: "coba2.auction_report_az"
+  path: "coba2.ex_exchange_auction_report_az"
   description: "Main auction logs table containing request, bid, and win info"
   time_column: "auction_timestamp"
-  partition_cols: ["dt"]
   columns:
     event_id:
       dtype: "string"

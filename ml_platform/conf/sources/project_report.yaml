@@ -1,14 +1,14 @@
 # =============================================================================
-# project Report Data Source
+# Project Report Data Source
 # =============================================================================
-# Aggregated report for project experiments with bid requests and revenue metrics.
+# Aggregated report for Project experiments with bid requests and revenue metrics.
 # Used for Experiment Analysis tasks.
 # =============================================================================
 
 project_report:
   type: "hive"
   path: "hive_prod.lena.project_report"
-  description: "Aggregated report for project experiments with bid requests and revenue metrics"
+  description: "Aggregated report for Project experiments with bid requests and revenue metrics"
   time_column: "event_time"
   columns:
     event_time:
@@ -21,7 +21,7 @@ project_report:
 
     project_exp_bucket:
       dtype: "string"
-      description: "project experiment bucket ID"
+      description: "Project experiment bucket ID"
       provides:
         - "ad_exp_id"
 

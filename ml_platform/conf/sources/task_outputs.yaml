@@ -13,7 +13,7 @@
 # ---------------------------------------------------------------------------
 aggregate_hourly_win_price:
   type: "s3_parquet"
-  path: "s3://project-dev/luxu/project/etl/aggregate_hourly_win_price"
+  path: "s3://exchange-dev/luxu/project/etl/aggregate_hourly_win_price"
   description: "Hourly aggregated win price metrics (output of aggregate_hourly_win_price task)"
   time_column: "time_bucket"
   columns:
@@ -59,7 +59,7 @@ aggregate_hourly_win_price:
 # ---------------------------------------------------------------------------
 compute_rolling_win_price:
   type: "s3_parquet"
-  path: "s3://project-dev/luxu/project/etl/compute_rolling_win_price"
+  path: "s3://exchange-dev/luxu/project/etl/compute_rolling_win_price"
   description: "Rolling 1h/3h win price features (output of compute_rolling_win_price task)"
   time_column: "time_bucket"
   columns:
@@ -122,7 +122,7 @@ compute_rolling_win_price:
 # ---------------------------------------------------------------------------
 compute_rolling_win_price_by_publisher:
   type: "s3_parquet"
-  path: "s3://project-dev/luxu/project/etl/compute_rolling_win_price_by_publisher"
+  path: "s3://exchange-dev/luxu/project/etl/compute_rolling_win_price_by_publisher"
   description: "Publisher-level rolling 1h/3h win price features"
   time_column: "time_bucket"
   columns:

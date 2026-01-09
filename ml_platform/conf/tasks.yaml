@@ -25,7 +25,7 @@
 
 # Global settings
 _settings:
-  output_root: "s3://project-dev/luxu/project"
+  output_root: "s3://exchange-dev/luxu/project"
 
 # ---------------------------------------------------------------------------
 # ETL Task: Aggregate Hourly Win Price Metrics
@@ -41,7 +41,7 @@ aggregate_hourly_win_price:
   description: "Aggregate raw auction data to hourly win price metrics"
 
   input:
-    source: "downsampled_auction_logs"
+    source: "auction_logs"
     date_range:
       from: ~  # Required: provide via --from
       to: ~    # Required: provide via --to
@@ -49,6 +49,7 @@ aggregate_hourly_win_price:
 
   params:
     dedupe_by: "event_id"
+    dedupe_mode: "none"  # Fast: keeps one copy per event_id
 
     group_by:
       - "rtb_id"
